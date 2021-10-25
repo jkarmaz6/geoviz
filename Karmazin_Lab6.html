@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Leaflet Map</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
+</head>
+<body>
+        
+         <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+           <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+        <div id="map" style="width: 1000px; height: 600px"></div>
+<script>
+ //Create Map
+            var map = L.map('map', {center: [39.954405396178416, -75.16671825152129], zoom: 12}); // create a map instance with center of Temple University
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+map.doubleClickZoom.disable(); // disable the double click to zoom in
+
+// add point marker //
+var startPoint = L.marker([39.89939337871219, -75.1752459212007]).addTo(map);
+startPoint.bindPopup("Start");
+startPoint.bindPopup("<h3>Begin Bike Route</h3><p>South Philadelphia</p>");
+    
+    var endPoint = L.marker([39.96508111359956, -75.18074136642147]).addTo(map);
+    endPoint.bindPopup("End");
+    endPoint.bindPopup("<h3>Finish Bike Route</h3><p>Art Museum</p>");
+    
+        var midPoint1 = L.marker([39.9471162051654, -75.18510539713502]).addTo(map);
+        midPoint1.bindPopup("mid1");
+        midPoint1.bindPopup("<h3>Turn Here</h3><p>Head north  on the Schuylkill River Trail</p>");
+    
+            var midPoint2 = L.marker([39.944885749355976, -75.16538644453365]).addTo(map);
+            midPoint2.bindPopup("mid2");
+            midPoint2.bindPopup("<h3>Turn Here</h3><p>Head west towards the Schuyllkill River</p>")
+
+
+// create a polyline
+var myBikeRoute = L.polyline([[39.89939337871219, -75.1752459212007],
+                 [39.944885749355976, -75.16538644453365],
+                 [39.9471162051654, -75.18510539713502],
+                 [39.95070956452577, -75.18106462793952],
+                 [39.96508111359956, -75.18074136642147]],
+                  {color: 'red', weight: 5}).addTo(map);
+
+// Bind popup to line object
+myBikeRoute.bindPopup("Bike Route");
+
+    
+    // Create an Empty Popup
+var popup = L.popup();
+// Write function to set Properties of the Popup
+function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+}
+
+// Listen for a click event on the Map element
+map.on('click', onMapClick);
+    
+    
+
+    
+    // load GeoJSON from an external file
+$.getJSON("blood_lead.geojson",function(data){
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJson(data, {
+        onEachFeature: function(feature, layer){
+            layer.bindPopup('Blood lead level: '+feature.properties.num_bll_5p);
+        }
+    }).addTo(map);
+});
+    </script>
+</body>
+</html>
